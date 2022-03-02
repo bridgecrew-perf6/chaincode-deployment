@@ -14,8 +14,7 @@ deploymentModel.getAll = () => {
 };
 
 deploymentModel.deploymentExists = (deploymentName) => {
-
-  return deploymentModel.findOne({name:deploymentName});
+  return deploymentModel.findOne({ name: deploymentName });
 };
 
 
