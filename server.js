@@ -1,18 +1,18 @@
-import express from "express";
+import express from 'express';
 
 
-import bodyParser from "body-parser";
-import cors from "cors";
-import logger from "./core/logger/app-logger";
-import morgan from "morgan";
-import config from "./core/config/config.dev";
-import cars from "./routes/cars.route";
-import deployments from "./routes/deployments.route";
+import bodyParser from 'body-parser';
+import cors from 'cors';
+import logger from './core/logger/app-logger';
+import morgan from 'morgan';
+import config from './core/config/config.dev';
+import cars from './routes/cars.route';
+import deployments from './routes/deployments.route';
 
-import connectToDb from "./db/connect";
+import connectToDb from './db/connect';
 
-const fileUpload = require("express-fileupload");
-const _ = require("lodash");
+const fileUpload = require('express-fileupload');
+const _ = require('lodash');
 
 const port = config.serverPort;
 logger.stream = {
@@ -33,21 +33,21 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(multipart());
-app.use(morgan("dev", { stream: logger.stream }));
+app.use(morgan('dev', { stream: logger.stream }));
 
-app.use("/cars", cars);
-app.use("/deployments", deployments);
+app.use('/cars', cars);
+app.use('/deployments', deployments);
 
-app.get("/", (req, res) => {
-  res.send("Invalid endpoint!");
+app.get('/', (req, res) => {
+  res.send('Invalid endpoint!');
 });
 
-app.post("/upload-chaincodes", async (req, res) => {
+app.post('/upload-chaincodes', async (req, res) => {
   try {
     if (!req.files) {
       res.send({
         status: false,
-        message: "No file uploaded",
+        message: 'No file uploaded',
       });
     } else {
       const data = [];
@@ -71,16 +71,16 @@ app.post("/upload-chaincodes", async (req, res) => {
       // return response
       res.send({
         status: true,
-        message: "Files are uploaded",
+        message: 'Files are uploaded',
         data,
       });
     }
   } catch (err) {
     logger.error(err);
-    res.status(500).send(err);
+    res.status(500).send(err); s;
   }
 });
 
 app.listen(port, () => {
-  logger.info("server started - ", port);
+  logger.info('server started - ', port);
 });

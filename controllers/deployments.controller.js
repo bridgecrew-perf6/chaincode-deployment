@@ -2,8 +2,11 @@ import Deployment from '../models/deployments.model';
 import logger from '../core/logger/app-logger';
 import deploymentService from '../services/deployment.service';
 
-const fileUpload = require("express-fileupload");
-const _ = require("lodash");
+const fs = require('fs');
+
+
+const fileUpload = require('express-fileupload');
+const _ = require('lodash');
 
 const controller = {};
 
@@ -24,31 +27,32 @@ controller.deploy = async (req, res, next) => {
   });
   const deploymentName = req.body.name;
   try {
-
-
-
     const existingDeployment = await Deployment.deploymentExists(deploymentName);
 
-    if (existingDeployment) { next('Deployment already exists '+ existingDeployment); } else {
+    if (existingDeployment) { next(`Deployment already exists ${existingDeployment}`); } else {
       const savedDeployment = await Deployment.addDeployment(deploymentToAdd);
 
       try {
         if (!req.files) {
           res.send({
             status: false,
-            message: "No file uploaded",
+            message: 'No file uploaded',
           });
         } else {
           const data = [];
-    
+          const dir = `./uploads/${deploymentName}`;
           // logger.info(req.files.chaincodes)
+          if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+          }
+
           // loop all files
           _.forEach(_.keysIn(req.files.chaincodes), (key) => {
             const photo = req.files.chaincodes[key];
-    
+
             // move photo to uploads directory
-            photo.mv(`./uploads/${photo.name}`);
-    
+            photo.mv(`${dir}/${photo.name}`);
+
             // push file details
             data.push({
               name: photo.name,
@@ -56,20 +60,18 @@ controller.deploy = async (req, res, next) => {
               size: photo.size,
             });
           });
-    
+
           // return response
           res.send({
             status: true,
-            message: "Files are uploaded, Deployment triggered",
+            message: 'Files are uploaded, Deployment triggered',
             data,
           });
         }
       } catch (err) {
         logger.error(err);
-         res.status(500).send(err);
+        res.status(500).send(err);
       }
-    
-
 
 
       logger.info('Adding deployment...');
