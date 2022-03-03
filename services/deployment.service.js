@@ -13,7 +13,16 @@ deploymentService.deploy = async (req, res, fileName) => {
 
   await uploadFileMiddleware(req, res);
   logger.info('running chaincode peer commands');
-  logger.info('peer chaincode install');
+
+  exec('cd /root/busy-network ; ./scripts/new-chaincode.sh sc 1 /root/chaincode-deployment/simple-chaincode simplechcode', (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`);
+      return;
+    }
+    console.log(`stdout: ${stdout}`);
+    console.error(`stderr: ${stderr}`);
+  });
+
  
 };
 
